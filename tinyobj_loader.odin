@@ -93,8 +93,8 @@ init_material :: proc() -> Material {
    Returns a list of materials and a map lookup for name -> index 
 */
 parse_mtl_file :: proc(filename: string) -> ([dynamic]Material, map[string]int, bool) {
-	data, ok := os.read_entire_file(filename)
-	if !ok {
+	data, err := os.read_entire_file(filename, context.allocator)
+	if err != nil {
 		fmt.eprintln("TINYOBJ: Error reading material file:", filename)
 		return nil, nil, false
 	}
@@ -337,7 +337,7 @@ parse_obj :: proc(buf: string, base_dir: string = "", flags: u32 = 0) -> (o: OBJ
 				fname := parts[1]
 				full_path := fname
 				if len(base_dir) > 0 {
-					full_path = filepath.join({base_dir, fname})
+					full_path, _ = filepath.join({base_dir, fname})
 				}
 				
 				// Parse MTL
